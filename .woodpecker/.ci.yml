@@ -9,4 +9,4 @@ pipeline:
       - sbt test
 
 branches:
-  exclude: [ master ]
+  exclude: [ testing/* ]
