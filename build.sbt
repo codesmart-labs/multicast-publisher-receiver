@@ -7,9 +7,12 @@ lazy val supportedScalaVersions = List(scala320, scala213)
 inThisBuild(
   List(
     organization := "com.github.rehanone",
-    homepage     := Some(url("https://github.com/rehanone/fs2-multicast")),
+    homepage     := Some(url("https://github.com/rehanone/multicast-publisher-receiver")),
     scmInfo      := Some(
-      ScmInfo(url("https://github.com/rehanone/fs2-multicast"), "git@github.com:rehanone/fs2-multicast.git")
+      ScmInfo(
+        url("https://github.com/rehanone/multicast-publisher-receiver"),
+        "git@github.com:rehanone/multicast-publisher-receiver.git"
+      )
     ),
     developers   := List(
       Developer("rehanone", "Rehan Mahmood", "_ at gmail dot com", url("https://github.com/rehanone"))
@@ -17,42 +20,9 @@ inThisBuild(
     licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
   )
 )
-ThisBuild / scalaVersion               := scala213
-ThisBuild / crossScalaVersions         := supportedScalaVersions
-ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.graalvm("20.3.1", "11"))
-ThisBuild / versionScheme              := Some("early-semver")
-
-ThisBuild / githubWorkflowBuildPreamble ++= Seq(
-  WorkflowStep.Run(
-    List(
-      "chmod -R 777 ./ftp-home/",
-      "docker-compose -f \"docker-compose.yml\" up -d --build",
-      "chmod -R 777 ./ftp-home/sftp/home/foo/dir1"
-    ),
-    name = Some("Start containers")
-  )
-)
-ThisBuild / githubWorkflowBuild := Seq(
-  WorkflowStep.Sbt(List("check", "test"))
-)
-
-//sbt-ci-release settings
-ThisBuild / githubWorkflowPublishPreamble := Seq(
-  WorkflowStep.Use(UseRef.Public("olafurpg", "setup-gpg", "v3"))
-)
-
-ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
-ThisBuild / githubWorkflowPublishTargetBranches := Seq(
-  RefPredicate.StartsWith(Ref.Branch("master")),
-  RefPredicate.StartsWith(Ref.Tag("v"))
-)
-ThisBuild / githubWorkflowPublish               := Seq(WorkflowStep.Sbt(List("ci-release")))
-ThisBuild / githubWorkflowEnv ++= List(
-  "PGP_PASSPHRASE",
-  "PGP_SECRET",
-  "SONATYPE_PASSWORD",
-  "SONATYPE_USERNAME"
-).map(envKey => envKey -> s"$${{ secrets.$envKey }}").toMap
+ThisBuild / scalaVersion       := scala213
+ThisBuild / crossScalaVersions := supportedScalaVersions
+ThisBuild / versionScheme      := Some("early-semver")
 
 val compilerOptionsCommon = Seq(
   "-encoding",
@@ -371,7 +341,7 @@ lazy val root = (project in file("."))
     `multicast-snooper`
   )
   .settings(
-    name               := "multicast-publisher-receiver-fs2",
+    name               := "multicast-publisher-receiver",
     // crossScalaVersions must be set to Nil on the aggregating project
     crossScalaVersions := Nil,
     publish / skip     := false

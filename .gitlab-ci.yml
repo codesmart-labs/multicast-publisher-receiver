@@ -1,0 +1,34 @@
+stages:
+  - info
+  - validate
+  - test
+  - deploy
+
+default:
+  image: sbtscala/scala-sbt:eclipse-temurin-jammy-17.0.5_8_1.8.2_2.13.10
+
+echo:
+  stage: info
+  script:
+    - echo "Using java version:"
+    - java -version
+    - echo "Using scala version:"
+    - scala --version
+  tags:
+    - docker
+
+check:
+  stage: validate
+  script:
+    - echo "Checking code formatting"
+    - sbt check
+  tags:
+    - docker
+
+test:
+  stage: test
+  script:
+    - echo "Running unit tests"
+    - sbt test
+  tags:
+    - docker
