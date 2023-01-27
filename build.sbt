@@ -6,12 +6,12 @@ lazy val supportedScalaVersions = List(scala320, scala213)
 
 inThisBuild(
   List(
-    organization := "com.github.rehanone",
-    homepage     := Some(url("https://github.com/rehanone/multicast-publisher-receiver")),
+    organization := "link.aivax.learning.scala",
+    homepage     := Some(url("https://gitlab.aivax.link/learning-scala/multicast-publisher-receiver")),
     scmInfo      := Some(
       ScmInfo(
-        url("https://github.com/rehanone/multicast-publisher-receiver"),
-        "git@github.com:rehanone/multicast-publisher-receiver.git"
+        url("https://gitlab.aivax.link/learning-scala/multicast-publisher-receiver"),
+        "git@gitlab-ssh.aivax.link:learning-scala/multicast-publisher-receiver.git"
       )
     ),
     developers   := List(
@@ -20,9 +20,14 @@ inThisBuild(
     licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
   )
 )
+
 ThisBuild / scalaVersion       := scala213
 ThisBuild / crossScalaVersions := supportedScalaVersions
 ThisBuild / versionScheme      := Some("early-semver")
+
+releaseTagComment        := s"Release ${(ThisBuild / version).value}"
+releaseCommitMessage     := s"Setting version to ${(ThisBuild / version).value} :[ci skip]"
+releaseNextCommitMessage := s"Setting version to ${(ThisBuild / version).value} :[ci skip]"
 
 val compilerOptionsCommon = Seq(
   "-encoding",
@@ -82,11 +87,12 @@ lazy val `model-alphavantage` = (project in file("models/model-alphavantage"))
       }
       .toList
       .flatten,
+    publish / skip := true,
     libraryDependencies ++= munitDeps
       :+ fs2Core
       :+ circeGeneric
       :+ circeParser
-      :+ fs2Io % Test
+      :+ fs2Io      % Test
   )
 
 lazy val `model-multicast` = (project in file("models/model-multicast"))
@@ -99,12 +105,13 @@ lazy val `model-multicast` = (project in file("models/model-multicast"))
       }
       .toList
       .flatten,
+    publish / skip := true,
     libraryDependencies ++= munitDeps
       :+ fs2Core
       :+ circeGeneric
       :+ circeParser
       :+ ip4s
-      :+ fs2Io % Test
+      :+ fs2Io      % Test
   )
 
 lazy val `model-authentication` = (project in file("models/model-authentication"))
@@ -116,7 +123,8 @@ lazy val `model-authentication` = (project in file("models/model-authentication"
         case Some((3, _))            => compilerOptionsScala3
       }
       .toList
-      .flatten
+      .flatten,
+    publish / skip := true
   )
 
 lazy val `common-multicast` = (project in file("common/common-multicast"))
@@ -130,6 +138,7 @@ lazy val `common-multicast` = (project in file("common/common-multicast"))
       }
       .toList
       .flatten,
+    publish / skip := true,
     libraryDependencies ++= munitDeps
       :+ fs2Core
       :+ fs2Io
@@ -144,7 +153,8 @@ lazy val `common-pretty-cli` = (project in file("common/common-pretty-cli"))
         case Some((3, _))            => compilerOptionsScala3
       }
       .toList
-      .flatten
+      .flatten,
+    publish / skip := true
   )
 
 lazy val `common-time` = (project in file("common/common-time"))
@@ -157,6 +167,7 @@ lazy val `common-time` = (project in file("common/common-time"))
       }
       .toList
       .flatten,
+    publish / skip := true,
     libraryDependencies ++= munitDeps
   )
 
@@ -170,6 +181,7 @@ lazy val `encryption-core` = (project in file("encryption/encryption-core"))
       }
       .toList
       .flatten,
+    publish / skip := true,
     libraryDependencies ++= munitDeps
       :+ fs2Core
   )
@@ -186,6 +198,7 @@ lazy val `encryption-aws` = (project in file("encryption/encryption-aws"))
       }
       .toList
       .flatten,
+    publish / skip        := true,
     libraryDependencies ++= munitDeps
       ++ loggingDeps
       :+ fs2Core
@@ -212,6 +225,7 @@ lazy val `multicast-core` = (project in file("apps/multicast-core"))
       }
       .toList
       .flatten,
+    publish / skip := true,
     libraryDependencies ++= munitDeps
       :+ fs2Core
       :+ fs2Io
@@ -221,7 +235,7 @@ lazy val `multicast-core` = (project in file("apps/multicast-core"))
 
 lazy val `multicast-publisher` = (project in file("apps/multicast-publisher"))
   .dependsOn(`common-multicast`, `model-alphavantage`, `multicast-core`)
-  .enablePlugins(JavaAppPackaging)
+  .enablePlugins(JavaAppPackaging, UniversalDeployPlugin)
   .settings(
     scalacOptions ++= compilerOptionsCommon ++ PartialFunction
       .condOpt(CrossVersion.partialVersion(scalaVersion.value)) {
@@ -232,6 +246,7 @@ lazy val `multicast-publisher` = (project in file("apps/multicast-publisher"))
       .toList
       .flatten,
     crossScalaVersions              := Seq(scala213),
+    crossPaths                      := false,
     Test / fork                     := true,
     Test / parallelExecution        := false,
     publishMavenStyle               := true,
@@ -261,7 +276,7 @@ lazy val `multicast-publisher` = (project in file("apps/multicast-publisher"))
 
 lazy val `multicast-receiver` = (project in file("apps/multicast-receiver"))
   .dependsOn(`common-multicast`, `model-alphavantage`, `common-pretty-cli`, `common-time`, `multicast-core`)
-  .enablePlugins(JavaAppPackaging)
+  .enablePlugins(JavaAppPackaging, UniversalDeployPlugin)
   .settings(
     scalacOptions ++= compilerOptionsCommon ++ PartialFunction
       .condOpt(CrossVersion.partialVersion(scalaVersion.value)) {
@@ -272,6 +287,7 @@ lazy val `multicast-receiver` = (project in file("apps/multicast-receiver"))
       .toList
       .flatten,
     crossScalaVersions              := Seq(scala213),
+    crossPaths                      := false,
     Test / fork                     := true,
     Test / parallelExecution        := false,
     publishMavenStyle               := true,
@@ -292,7 +308,7 @@ lazy val `multicast-receiver` = (project in file("apps/multicast-receiver"))
 
 lazy val `multicast-snooper` = (project in file("apps/multicast-snooper"))
   .dependsOn(`common-multicast`, `common-time`, `multicast-core`)
-  .enablePlugins(JavaAppPackaging)
+  .enablePlugins(JavaAppPackaging, UniversalDeployPlugin)
   .settings(
     scalacOptions ++= compilerOptionsCommon ++ PartialFunction
       .condOpt(CrossVersion.partialVersion(scalaVersion.value)) {
@@ -303,6 +319,7 @@ lazy val `multicast-snooper` = (project in file("apps/multicast-snooper"))
       .toList
       .flatten,
     crossScalaVersions              := Seq(scala213),
+    crossPaths                      := false,
     Test / fork                     := true,
     Test / parallelExecution        := false,
     publishMavenStyle               := true,
@@ -349,7 +366,7 @@ lazy val root = (project in file("."))
     name               := "multicast-publisher-receiver",
     // crossScalaVersions must be set to Nil on the aggregating project
     crossScalaVersions := Nil,
-    publish / skip     := false
+    publish / skip     := true
   )
 
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
