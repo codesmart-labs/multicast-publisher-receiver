@@ -177,6 +177,7 @@ lazy val `encryption-core` = (project in file("encryption/encryption-core"))
 lazy val `encryption-aws` = (project in file("encryption/encryption-aws"))
   .dependsOn(`model-authentication`, `encryption-core`)
   .settings(
+    Defaults.itSettings,
     scalacOptions ++= compilerOptionsCommon ++ PartialFunction
       .condOpt(CrossVersion.partialVersion(scalaVersion.value)) {
         case Some((2, n)) if n < 13  => compilerOptionsScala212
@@ -194,7 +195,11 @@ lazy val `encryption-aws` = (project in file("encryption/encryption-aws"))
       :+ `aws-encryption-sdk`
       :+ `bouncycastle`
       :+ `jaxb-api`
+      :+ munitCore         % "it"
+      :+ catsEffectTestkit % "it"
+      :+ munitCatsEffect   % "it"
   )
+  .configs(IntegrationTest)
 
 lazy val `multicast-core` = (project in file("apps/multicast-core"))
   .dependsOn(`model-multicast`, `model-authentication`, `encryption-aws`)
