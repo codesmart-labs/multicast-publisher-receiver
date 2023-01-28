@@ -3,15 +3,17 @@ package multicast
 package snooper
 package message
 
-import cats.effect.{ Async, Clock, Resource }
+import cats.effect.{ Async, Resource }
 import cats.implicits.*
+import common.human.readable.HumanReadableDurationConvertor.*
 import common.pretty.cli.ConsoleColorise.*
-import common.time.TimeConverter.*
 import model.alphavantage.StockTick
+
+import scala.concurrent.duration.FiniteDuration
 
 sealed trait MessageFormatter[F[_]] {
 
-  def format(stockTick: StockTick): F[String]
+  def format(stockTick: StockTick, latency: FiniteDuration): F[String]
 }
 
 case object MessageFormatter {
@@ -20,14 +22,14 @@ case object MessageFormatter {
     Resource.eval {
       F.delay {
         new MessageFormatter[F] {
-          override def format(stockTick: StockTick): F[String] =
+          override def format(stockTick: StockTick, latency: FiniteDuration): F[String] =
             for {
-              timestamp <- Clock[F].realTime.map(_.toMillis.format(DATE_FORMAT_ISO8601))
-              output    <- F.delay {
-                             s"""| C: ${stockTick.id} | T: $timestamp
-                              | SYM: ${stockTick.symbol.blue.bold} | HIGH: ${stockTick.high.green.bold} | LOW: ${stockTick.low.red.bold} | AT: ${stockTick.timestamp.bold}
+              lat    <- F.delay(latency.toHumanReadableDuration)
+              output <- F.delay {
+                          s"""| C: ${stockTick.id} | L: ${lat.yellow.bold} |
+                              | SYM: ${stockTick.symbol.blue.bold} | HIGH: ${stockTick.high.green.bold} | LOW: ${stockTick.low.red.bold} | AT: ${stockTick.timestamp.bold} |
                               |""".stripMargin
-                           }
+                        }
             } yield output
         }
       }
