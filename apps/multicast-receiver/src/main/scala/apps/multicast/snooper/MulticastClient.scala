@@ -3,7 +3,7 @@ package multicast
 package snooper
 
 import apps.multicast.core.serialization.DatagramUnrapper
-import cats.effect.{ Async, Resource }
+import cats.effect.{ Async, Clock, Resource }
 import cats.implicits.*
 import common.multicast.socket.MulticastSocket
 import fs2.*
@@ -13,6 +13,8 @@ import multicast.snooper.message.{ MessageFormatter, MessageTransformer }
 import multicast.snooper.settings.AppSettings
 
 import java.nio.charset.StandardCharsets
+import java.util.concurrent.TimeUnit
+import scala.concurrent.duration.FiniteDuration
 
 sealed trait MulticastClient[F[_]] {
 
@@ -41,9 +43,12 @@ case object MulticastClient {
               for {
                 datagramJson    <- F.delay(new String(packet.bytes.toArray, StandardCharsets.UTF_8))
                 datagramWrapper <- datagramUnrapper.unwrap(datagramJson)
+                sendTime        <- F.delay(FiniteDuration(datagramWrapper.timestamp, TimeUnit.MILLISECONDS))
+                currentTime     <- Clock[F].realTime
+                latency         <- F.delay(currentTime - sendTime)
                 json            <- dataEncryptor.decrypt(datagramWrapper.payload)
                 stockTick       <- messageTransformer.transform(json = json)
-                output          <- messageFormatter.format(stockTick = stockTick)
+                output          <- messageFormatter.format(stockTick = stockTick, latency = latency)
                 _               <- F.delay(println("------"))
                 _               <- F.delay(println(output))
               } yield ()

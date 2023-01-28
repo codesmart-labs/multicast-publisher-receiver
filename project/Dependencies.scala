@@ -11,14 +11,15 @@ object Dependencies {
   lazy val fs2DataCsvVersion            = "1.6.1"
   lazy val `ip4s-version`               = "3.2.0"
   lazy val betterFilesVersion           = "3.9.1"
+  lazy val `squants-version`            = "1.8.3"
   lazy val scalatestVersion             = "3.2.15"
   lazy val munitVersion                 = "0.7.29"
   lazy val munitCatsEffectVersion       = "1.0.7"
   lazy val log4jVersion                 = "2.19.0"
-  lazy val `aws-sdk-core-version`       = "1.12.389"
+  lazy val `aws-sdk-core-version`       = "1.12.395"
   lazy val `aws-encryption-sdk-version` = "2.4.0"
   lazy val `bouncycastle-version`       = "1.70"
-  lazy val `jaxb-api-version`           = "2.3.0"
+  lazy val `jaxb-api-version`           = "2.3.1"
 
   // Libraries
   val fs2Core = "co.fs2" %% "fs2-core" % fs2Version
@@ -50,6 +51,7 @@ object Dependencies {
   val ip4s = "com.comcast" %% "ip4s-core" % `ip4s-version`
 
   val betterFiles = "com.github.pathikrit" %% "better-files" % betterFilesVersion
+  val squants     = "org.typelevel"        %% "squants"      % `squants-version`
 
   // Java Libraries
   val `aws-sdk-core`       = "com.amazonaws"    % "aws-java-sdk-core"       % `aws-sdk-core-version`

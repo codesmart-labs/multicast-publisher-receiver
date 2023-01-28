@@ -127,6 +127,20 @@ lazy val `model-authentication` = (project in file("models/model-authentication"
     publish / skip := true
   )
 
+lazy val `common-human-readable` = (project in file("common/common-human-readable"))
+  .settings(
+    scalacOptions ++= compilerOptionsCommon ++ PartialFunction
+      .condOpt(CrossVersion.partialVersion(scalaVersion.value)) {
+        case Some((2, n)) if n < 13  => compilerOptionsScala212
+        case Some((2, n)) if n >= 13 => compilerOptionsScala213
+        case Some((3, _))            => compilerOptionsScala3
+      }
+      .toList
+      .flatten,
+    libraryDependencies ++= munitDeps
+      :+ squants
+  )
+
 lazy val `common-multicast` = (project in file("common/common-multicast"))
   .dependsOn(`model-multicast`)
   .settings(
@@ -275,7 +289,14 @@ lazy val `multicast-publisher` = (project in file("apps/multicast-publisher"))
   )
 
 lazy val `multicast-receiver` = (project in file("apps/multicast-receiver"))
-  .dependsOn(`common-multicast`, `model-alphavantage`, `common-pretty-cli`, `common-time`, `multicast-core`)
+  .dependsOn(
+    `common-multicast`,
+    `model-alphavantage`,
+    `common-pretty-cli`,
+    `common-time`,
+    `multicast-core`,
+    `common-human-readable`
+  )
   .enablePlugins(JavaAppPackaging, UniversalDeployPlugin)
   .settings(
     scalacOptions ++= compilerOptionsCommon ++ PartialFunction
@@ -307,7 +328,7 @@ lazy val `multicast-receiver` = (project in file("apps/multicast-receiver"))
   )
 
 lazy val `multicast-snooper` = (project in file("apps/multicast-snooper"))
-  .dependsOn(`common-multicast`, `common-time`, `multicast-core`)
+  .dependsOn(`common-multicast`, `common-time`, `multicast-core`, `common-human-readable`)
   .enablePlugins(JavaAppPackaging, UniversalDeployPlugin)
   .settings(
     scalacOptions ++= compilerOptionsCommon ++ PartialFunction
