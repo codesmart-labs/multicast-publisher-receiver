@@ -13,6 +13,9 @@ pipeline:
     image: sbtscala/scala-sbt:eclipse-temurin-jammy-17.0.5_8_1.8.2_2.13.10
     commands:
       - echo "Checking code formatting"
+      - mkdir -p .secure_files
+      - echo "$sbt_credentials" > .secure_files/sbt_credentials
+      - touch .secure_files/sbt_credentials
       - sbt check
     when:
       event: [push, pull_request, tag, deployment]
@@ -21,6 +24,9 @@ pipeline:
     image: sbtscala/scala-sbt:eclipse-temurin-jammy-17.0.5_8_1.8.2_2.13.10
     commands:
       - echo "Running unit tests"
+      - mkdir -p .secure_files
+      - echo "$sbt_credentials" > .secure_files/sbt_credentials
+      - touch .secure_files/sbt_credentials
       - sbt test
     when:
       event: [push, pull_request, tag, deployment]
