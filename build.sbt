@@ -1,5 +1,7 @@
 import Dependencies._
 
+import com.typesafe.sbt.packager.SettingsHelper
+
 lazy val scala213               = "2.13.10"
 lazy val scala320               = "3.2.1"
 lazy val supportedScalaVersions = List(scala320, scala213)
@@ -268,7 +270,8 @@ lazy val `multicast-publisher` = (project in file("apps/multicast-publisher"))
     Compile / discoveredMainClasses := Seq(),
     bashScriptConfigLocation        := Some("${app_home}/../conf/linux.ini"),
     batScriptConfigLocation         := Some("%APP_HOME%\\conf\\windows.ini"),
-    topLevelDirectory               := Some(packageName.value)
+    topLevelDirectory               := Some(packageName.value),
+    SettingsHelper.makeDeploymentSettings(Universal, Universal / packageBin, "tgz")
   )
   .settings(
     libraryDependencies ++= munitDeps
@@ -316,7 +319,8 @@ lazy val `multicast-receiver` = (project in file("apps/multicast-receiver"))
     Compile / discoveredMainClasses := Seq(),
     bashScriptConfigLocation        := Some("${app_home}/../conf/linux.ini"),
     batScriptConfigLocation         := Some("%APP_HOME%\\conf\\windows.ini"),
-    topLevelDirectory               := Some(packageName.value)
+    topLevelDirectory               := Some(packageName.value),
+    SettingsHelper.makeDeploymentSettings(Universal, Universal / packageBin, "tgz")
   )
   .settings(
     libraryDependencies ++= munitDeps
@@ -348,17 +352,10 @@ lazy val `multicast-snooper` = (project in file("apps/multicast-snooper"))
     Compile / discoveredMainClasses := Seq(),
     bashScriptConfigLocation        := Some("${app_home}/../conf/linux.ini"),
     batScriptConfigLocation         := Some("%APP_HOME%\\conf\\windows.ini"),
-    topLevelDirectory               := Some(packageName.value)
+    topLevelDirectory               := Some(packageName.value),
+    SettingsHelper.makeDeploymentSettings(Universal, Universal / packageBin, "tgz")
   )
   .settings(
-    scalacOptions ++= compilerOptionsCommon ++ PartialFunction
-      .condOpt(CrossVersion.partialVersion(scalaVersion.value)) {
-        case Some((2, n)) if n < 13  => compilerOptionsScala212
-        case Some((2, n)) if n >= 13 => compilerOptionsScala213
-        case Some((3, _))            => compilerOptionsScala3
-      }
-      .toList
-      .flatten,
     libraryDependencies ++= munitDeps
       ++ loggingDeps
       :+ fs2Core
