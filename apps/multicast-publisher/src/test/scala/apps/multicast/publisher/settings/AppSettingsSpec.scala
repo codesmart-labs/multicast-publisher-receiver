@@ -56,6 +56,7 @@ class AppSettingsSpec extends CatsEffectSuite {
               "name" -> "test-key"
             ),
             authentication = Platform.Aws.Authentication(
+              awsRegion = "us-west-1",
               accessKeyId = "your_access_key_id",
               secretAccessKey = "your_secret_access_key"
             )
