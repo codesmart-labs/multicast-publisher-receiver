@@ -1,13 +1,13 @@
 package apps
 package multicast
-package snooper
+package receiver
 package settings
 
 import cats.effect.{ Resource, Sync }
 import com.comcast.ip4s.*
 import model.authentication.Platform
 import model.multicast.MulticastSettings
-import multicast.snooper.settings.AppSettings.Settings
+import multicast.receiver.settings.AppSettings.Settings
 import pureconfig.*
 import pureconfig.generic.auto.*
 import pureconfig.module.catseffect.syntax.*

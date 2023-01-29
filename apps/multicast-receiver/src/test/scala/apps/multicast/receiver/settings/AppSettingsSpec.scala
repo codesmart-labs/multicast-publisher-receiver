@@ -1,13 +1,13 @@
 package apps
 package multicast
-package snooper
+package receiver
 package settings
 
 import cats.effect.IO
 import com.comcast.ip4s.*
 import model.authentication.Platform
 import model.multicast.MulticastSettings
-import multicast.snooper.settings.AppSettings.{ Encryption, Settings }
+import multicast.receiver.settings.AppSettings.{ Encryption, Settings }
 import munit.*
 
 class AppSettingsSpec extends CatsEffectSuite {

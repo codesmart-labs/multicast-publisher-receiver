@@ -1,6 +1,6 @@
 package apps
 package multicast
-package snooper
+package receiver
 package message
 
 import cats.effect.{ Async, Resource }

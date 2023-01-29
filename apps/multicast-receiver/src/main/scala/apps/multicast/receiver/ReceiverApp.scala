@@ -1,6 +1,6 @@
 package apps
 package multicast
-package snooper
+package receiver
 
 import cats.effect.{ IO, IOApp }
 import fs2.*
