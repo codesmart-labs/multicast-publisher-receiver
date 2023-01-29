@@ -1,22 +1,21 @@
 #!/usr/bin/env bash
 
-# Make sure these 2 values are set correctly
+# Make sure these 2 values are set correctly or override them as parameters
 readonly PROJECT_VERSION="0.0.2"
 readonly PROJECT_ROOT=${HOME}/mcast
 
 readonly DOWNLOAD_DIRECTORY=/tmp
 readonly JDK_VERSION=19
-readonly JDK_INSTALL_DIR=${PROJECT_ROOT}/jdks
-readonly JDK_HOME=${JDK_INSTALL_DIR}/jdk-${JDK_VERSION}
 readonly JDK_DOWNLOAD_URL=https://download.oracle.com/java/${JDK_VERSION}/latest/jdk-${JDK_VERSION}_linux-x64_bin.tar.gz
 readonly JDK_DOWNLOAD_FILE=${DOWNLOAD_DIRECTORY}/jdk-${JDK_VERSION}.tar.gz
 
-readonly PROJECT_HOME=${PROJECT_ROOT}/projects
-readonly PROJECT_INSTALL_DIRECTORY=${PROJECT_HOME}/install
-readonly PROJECT_CONFIG_DIRECTORY=${PROJECT_HOME}/conf
 readonly PROJECT_DOWNLOAD_URL="https://art.aivax.link/artifactory/libs-release-local/link/aivax/learning/scala"
 
 install_jdk() {
+  local install_root_directory=${1}
+  local jdk_install_directory=${install_root_directory}/jdks
+  local jdk_home=${jdk_install_directory}/jdk-${JDK_VERSION}
+
   if [ -f $JDK_DOWNLOAD_FILE ]; then
      echo "File ${JDK_DOWNLOAD_FILE} exists."
   else
@@ -25,58 +24,66 @@ install_jdk() {
     wget -O ${JDK_DOWNLOAD_FILE} -q ${JDK_DOWNLOAD_URL}
   fi
 
-  mkdir -p "${JDK_HOME}"
-  tar -xf ${JDK_DOWNLOAD_FILE} --strip-components=1 --directory "${JDK_HOME}"
+  mkdir -p "${jdk_home}"
+  tar -xf ${JDK_DOWNLOAD_FILE} --strip-components=1 --directory "${jdk_home}"
 
-  ln -sf "${JDK_HOME}" "${JDK_INSTALL_DIR}"/jdk-latest
+  ln -sf "${jdk_home}" "${jdk_install_directory}"/jdk-latest
 }
 
 install_project() {
   local project_name=${1}
   local project_version=${2}
+  local install_root_directory=${3}
+
+  local project_home=${install_root_directory}/projects
+  local project_install_directory=${project_home}/install
+  local project_config_directory=${project_home}/conf
 
   # Install Project
-  mkdir -p "${PROJECT_INSTALL_DIRECTORY}"
+  mkdir -p "${project_install_directory}"
 
-  rm -vf "${DOWNLOAD_DIRECTORY}/${project_name}.tgz"
-  wget -O "${DOWNLOAD_DIRECTORY}/${project_name}.tgz" "${PROJECT_DOWNLOAD_URL}/${project_name}/${project_version}/${project_name}-${project_version}.tgz"
+  rm -vf "${DOWNLOAD_DIRECTORY}/${project_name}.zip"
+  wget -O "${DOWNLOAD_DIRECTORY}/${project_name}.zip" "${PROJECT_DOWNLOAD_URL}/${project_name}/${project_version}/${project_name}-${project_version}.zip"
 
-  tar -xf "${DOWNLOAD_DIRECTORY}/${project_name}.tgz" --directory "${PROJECT_INSTALL_DIRECTORY}"
+  unzip -q -o -d "${project_install_directory}" "${DOWNLOAD_DIRECTORY}/${project_name}.zip"
 
   # Setup Config
-  mkdir -p "${PROJECT_CONFIG_DIRECTORY}"
-  if [ -f "${PROJECT_CONFIG_DIRECTORY}/${project_name}.conf" ]; then
-     echo "Config file ${PROJECT_CONFIG_DIRECTORY}/${project_name}.conf exists."
+  mkdir -p "${project_config_directory}"
+  if [ -f "${project_config_directory}/${project_name}.conf" ]; then
+     echo "Config file ${project_config_directory}/${project_name}.conf exists."
   else
-    echo "Config file ${PROJECT_CONFIG_DIRECTORY}/${project_name}.conf does not exists."
-    echo "Using the template at ${PROJECT_INSTALL_DIRECTORY}/${project_name}/conf/override.sample.conf"
-    cp -v "${PROJECT_INSTALL_DIRECTORY}/${project_name}/conf/override.sample.conf" "${PROJECT_CONFIG_DIRECTORY}/${project_name}.conf"
+    echo "Config file ${project_config_directory}/${project_name}.conf does not exists."
+    echo "Using the template at ${project_install_directory}/${project_name}/conf/override.sample.conf"
+    cp -v "${project_install_directory}/${project_name}/conf/override.sample.conf" "${project_config_directory}/${project_name}.conf"
   fi
 
-  ln -sf "${PROJECT_CONFIG_DIRECTORY}/${project_name}.conf" "${PROJECT_INSTALL_DIRECTORY}/${project_name}/conf/override.conf"
+  ln -sf "${project_config_directory}/${project_name}.conf" "${project_install_directory}/${project_name}/conf/override.conf"
 
   # Create run scripts
-  touch "${PROJECT_HOME}/${project_name}"
-  chmod a+x "${PROJECT_HOME}/${project_name}"
+  touch "${project_home}/${project_name}"
+  chmod a+x "${project_home}/${project_name}"
 
-cat > "${PROJECT_HOME}/${project_name}" <<EOF
+cat > "${project_home}/${project_name}" <<EOF
 #!/usr/bin/env bash
 
-pushd ${PROJECT_HOME}/install/${project_name}/bin
+pushd ${project_home}/install/${project_name}/bin
 
 
 ( JAVA_HOME=${JDK_INSTALL_DIR}/jdk-latest; \$JAVA_HOME/bin/java --version )
 
-( JAVA_HOME=${JDK_INSTALL_DIR}/jdk-latest; ${PROJECT_HOME}/install/${project_name}/bin/${project_name} )
+( JAVA_HOME=${JDK_INSTALL_DIR}/jdk-latest; ${project_home}/install/${project_name}/bin/${project_name} )
 EOF
 }
 
 main() {
-  install_jdk
+  local version="${1:-${PROJECT_VERSION}}"
+  local install_root_directory="${2:-"${PROJECT_ROOT}"}"
 
-  install_project "multicast-publisher" "${PROJECT_VERSION}"
-  install_project "multicast-receiver" "${PROJECT_VERSION}"
-  install_project "multicast-snooper" "${PROJECT_VERSION}"
+  install_jdk "${install_root_directory}"
+
+  install_project "multicast-publisher" "${version}" "${install_root_directory}"
+  install_project "multicast-receiver" "${version}" "${install_root_directory}"
+  install_project "multicast-snooper" "${version}" "${install_root_directory}"
 }
 
-main
+main "$@"
