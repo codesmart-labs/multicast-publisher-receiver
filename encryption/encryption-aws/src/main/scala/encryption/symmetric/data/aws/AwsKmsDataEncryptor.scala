@@ -42,6 +42,7 @@ case object AwsKmsDataEncryptor {
                               KmsMasterKeyProvider
                                 .builder()
                                 .withCredentials(credentials)
+                                .withDefaultRegion(platform.authentication.awsRegion)
                                 .buildStrict(platform.keyArns*)
                             }
       base64Encoder      <- Resource.pure(Base64.getEncoder)

@@ -13,6 +13,6 @@ case object Platform {
   ) extends Platform
 
   case object Aws {
-    case class Authentication(accessKeyId: String, secretAccessKey: String)
+    case class Authentication(awsRegion: String, accessKeyId: String, secretAccessKey: String)
   }
 }
