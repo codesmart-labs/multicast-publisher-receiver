@@ -271,7 +271,7 @@ lazy val `multicast-publisher` = (project in file("apps/multicast-publisher"))
     bashScriptConfigLocation        := Some("${app_home}/../conf/linux.ini"),
     batScriptConfigLocation         := Some("%APP_HOME%\\conf\\windows.ini"),
     topLevelDirectory               := Some(packageName.value),
-    SettingsHelper.makeDeploymentSettings(Universal, Universal / packageBin, "tgz")
+    SettingsHelper.makeDeploymentSettings(Universal, Universal / packageBin, "zip")
   )
   .settings(
     libraryDependencies ++= munitDeps
@@ -320,7 +320,7 @@ lazy val `multicast-receiver` = (project in file("apps/multicast-receiver"))
     bashScriptConfigLocation        := Some("${app_home}/../conf/linux.ini"),
     batScriptConfigLocation         := Some("%APP_HOME%\\conf\\windows.ini"),
     topLevelDirectory               := Some(packageName.value),
-    SettingsHelper.makeDeploymentSettings(Universal, Universal / packageBin, "tgz")
+    SettingsHelper.makeDeploymentSettings(Universal, Universal / packageBin, "zip")
   )
   .settings(
     libraryDependencies ++= munitDeps
@@ -353,7 +353,7 @@ lazy val `multicast-snooper` = (project in file("apps/multicast-snooper"))
     bashScriptConfigLocation        := Some("${app_home}/../conf/linux.ini"),
     batScriptConfigLocation         := Some("%APP_HOME%\\conf\\windows.ini"),
     topLevelDirectory               := Some(packageName.value),
-    SettingsHelper.makeDeploymentSettings(Universal, Universal / packageBin, "tgz")
+    SettingsHelper.makeDeploymentSettings(Universal, Universal / packageBin, "zip")
   )
   .settings(
     libraryDependencies ++= munitDeps
