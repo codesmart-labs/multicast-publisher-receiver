@@ -3,14 +3,15 @@ package multicast
 package publisher
 package stream
 
+import apps.multicast.publisher.process.{ DataFlattner, RequestProcessor }
+import apps.multicast.publisher.settings.AppSettings
+import apps.multicast.publisher.settings.AppSettings.FUNCTION_TIME_SERIES_INTRADAY
 import cats.effect.std.AtomicCell
-import cats.effect.{ Async, Resource }
+import cats.effect.{ Async, Clock, Resource }
 import cats.implicits.*
+import common.time.TimeConverter.*
 import fs2.*
 import model.alphavantage.StockTick
-import multicast.publisher.process.{ DataFlattner, RequestProcessor }
-import multicast.publisher.settings.AppSettings
-import multicast.publisher.settings.AppSettings.FUNCTION_TIME_SERIES_INTRADAY
 import org.http4s.Uri
 import org.http4s.client.Client
 import org.typelevel.log4cats.Logger
@@ -48,8 +49,11 @@ case object StockTickSource {
               dataFlattner     <- Stream.eval(DataFlattner.create(counter = atomicCounter))
               result           <- Stream
                                     .fixedRateStartImmediately(tickInterval)
-                                    .evalMap { time =>
-                                      logger.info(s"At time: $time, the stream has been running for: $time.")
+                                    .evalMap { _ =>
+                                      for {
+                                        time <- Clock[F].realTime.map(_.toMillis.format(DATE_FORMAT_ISO8601))
+                                        _    <- logger.info(s"At time: $time, the stream tick is created.")
+                                      } yield ()
                                     }
                                     .flatMap { _ =>
                                       Stream

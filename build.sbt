@@ -250,7 +250,7 @@ lazy val `multicast-core` = (project in file("apps/multicast-core"))
   )
 
 lazy val `multicast-publisher` = (project in file("apps/multicast-publisher"))
-  .dependsOn(`common-multicast`, `model-alphavantage`, `multicast-core`)
+  .dependsOn(`common-multicast`, `model-alphavantage`, `multicast-core`, `common-time`)
   .enablePlugins(JavaAppPackaging, UniversalDeployPlugin)
   .settings(
     scalacOptions ++= compilerOptionsCommon ++ PartialFunction

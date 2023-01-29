@@ -5,7 +5,7 @@ readonly PROJECT_VERSION="0.0.2"
 readonly PROJECT_ROOT=${HOME}/mcast
 
 readonly DOWNLOAD_DIRECTORY=/tmp
-readonly JDK_VERSION=19
+readonly JDK_VERSION=17
 readonly JDK_DOWNLOAD_URL=https://download.oracle.com/java/${JDK_VERSION}/latest/jdk-${JDK_VERSION}_linux-x64_bin.tar.gz
 readonly JDK_DOWNLOAD_FILE=${DOWNLOAD_DIRECTORY}/jdk-${JDK_VERSION}.tar.gz
 
@@ -69,7 +69,7 @@ cat > "${project_home}/${project_name}" <<EOF
 #!/usr/bin/env bash
 
 pushd ${project_home}/install/${project_name}/bin
-
+echo "I am in \$(pwd)"
 
 ( export JAVA_HOME=${jdk_install_directory}/jdk-latest; \\
   \$JAVA_HOME/bin/java --version \\
