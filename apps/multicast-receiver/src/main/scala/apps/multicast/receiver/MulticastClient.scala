@@ -1,6 +1,6 @@
 package apps
 package multicast
-package snooper
+package receiver
 
 import apps.multicast.core.serialization.DatagramUnrapper
 import cats.effect.{ Async, Clock, Resource }
@@ -9,8 +9,8 @@ import common.multicast.socket.MulticastSocket
 import fs2.*
 import fs2.io.net.Network
 import multicast.core.transit.DataEncryptor
-import multicast.snooper.message.{ MessageFormatter, MessageTransformer }
-import multicast.snooper.settings.AppSettings
+import multicast.receiver.message.{ MessageFormatter, MessageTransformer }
+import multicast.receiver.settings.AppSettings
 
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit

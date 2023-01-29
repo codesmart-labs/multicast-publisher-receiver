@@ -1,7 +1,5 @@
 stages:
-  - info
-  - validate
-  - test
+  - static
   - build
   - publish
   - release
@@ -15,8 +13,8 @@ variables:
 default:
   image: sbtscala/scala-sbt:eclipse-temurin-jammy-17.0.5_8_1.8.2_2.13.10
 
-echo:
-  stage: info
+info:
+  stage: static
   script:
     - echo "Using java version:"
     - java -version
@@ -25,8 +23,8 @@ echo:
   tags:
     - docker
 
-check:
-  stage: validate
+validate:
+  stage: static
   script:
     - echo "Checking code formatting"
     - *download_secure_files
@@ -35,7 +33,7 @@ check:
     - docker
 
 test:
-  stage: test
+  stage: build
   script:
     - echo "Running unit tests"
     - *download_secure_files
@@ -43,7 +41,7 @@ test:
   tags:
     - docker
 
-build:
+package:
   stage: build
   script:
     - echo "Building packages"
