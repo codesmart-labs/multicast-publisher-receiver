@@ -332,7 +332,7 @@ lazy val `multicast-receiver` = (project in file("apps/multicast-receiver"))
   )
 
 lazy val `multicast-snooper` = (project in file("apps/multicast-snooper"))
-  .dependsOn(`common-multicast`, `common-time`, `multicast-core`, `common-human-readable`)
+  .dependsOn(`common-multicast`, `common-time`, `common-human-readable`)
   .enablePlugins(JavaAppPackaging, UniversalDeployPlugin)
   .settings(
     scalacOptions ++= compilerOptionsCommon ++ PartialFunction
@@ -360,6 +360,8 @@ lazy val `multicast-snooper` = (project in file("apps/multicast-snooper"))
       ++ loggingDeps
       :+ fs2Core
       :+ fs2Io
+      :+ circeGeneric
+      :+ circeParser
       :+ pureconfigCore
       :+ pureconfigCatsEffect
       :+ pureconfigHttp4s
