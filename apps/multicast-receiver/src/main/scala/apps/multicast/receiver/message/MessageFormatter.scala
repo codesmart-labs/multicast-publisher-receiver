@@ -13,7 +13,7 @@ import scala.concurrent.duration.FiniteDuration
 
 sealed trait MessageFormatter[F[_]] {
 
-  def format(stockTick: StockTick, latency: FiniteDuration): F[String]
+  def format(stockTick: StockTick, latency: FiniteDuration, publisherId: String): F[String]
 }
 
 case object MessageFormatter {
@@ -22,11 +22,11 @@ case object MessageFormatter {
     Resource.eval {
       F.delay {
         new MessageFormatter[F] {
-          override def format(stockTick: StockTick, latency: FiniteDuration): F[String] =
+          override def format(stockTick: StockTick, latency: FiniteDuration, publisherId: String): F[String] =
             for {
               lat    <- F.delay(latency.toHumanReadableDuration)
               output <- F.delay {
-                          s"""| C: ${stockTick.id} | L: ${lat.yellow.bold} |
+                          s"""| S: ${publisherId.cyan.bold} | C: ${stockTick.id} | L: ${lat.yellow.bold} |
                               | SYM: ${stockTick.symbol.blue.bold} | HIGH: ${stockTick.high.green.bold} | LOW: ${stockTick.low.red.bold} | AT: ${stockTick.timestamp.bold} |
                               |""".stripMargin
                         }

@@ -17,7 +17,9 @@ sealed trait DatagramWrappingEngine[F[_]] {
 }
 
 case object DatagramWrappingEngine {
-  def create[F[_]](dataEncryptor: DataEncryptor[F])(implicit F: Async[F]): Resource[F, DatagramWrappingEngine[F]] =
+  def create[F[_]](dataEncryptor: DataEncryptor[F], publisherId: String)(implicit
+    F: Async[F]
+  ): Resource[F, DatagramWrappingEngine[F]] =
     Resource.pure {
       new DatagramWrappingEngine[F] {
         override def wrap: Pipe[F, StockTick, DatagramWrapper] =
@@ -30,7 +32,7 @@ case object DatagramWrappingEngine {
               datagramWrapper <- F.delay {
                                    DatagramWrapper(
                                      id = stockTick.id,
-                                     publisher = ip,
+                                     publisher = s"$ip/$publisherId",
                                      timestamp = timestamp,
                                      payload = payload
                                    )
