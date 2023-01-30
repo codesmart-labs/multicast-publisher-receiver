@@ -6,6 +6,7 @@ import apps.multicast.core.transit.DataEncryptor
 import apps.multicast.publisher.process.DatagramWrappingEngine
 import apps.multicast.publisher.settings.AppSettings
 import apps.multicast.publisher.stream.{ MulticastSink, ReprioritizeFlow, StockTickSource }
+import cats.effect.std.UUIDGen
 import cats.effect.{ Async, Resource }
 import cats.implicits.*
 import fs2.*
@@ -21,11 +22,12 @@ case object Orchestrator {
     for {
       appSettings            <- AppSettings.load
       tickDelay              <- Resource.pure(appSettings.settings.stream.tickDelay)
+      publisherId            <- Resource.eval(UUIDGen.randomString)
       httpClient             <- EmberClientBuilder.default[F].build
       stockTickSource        <- StockTickSource.create(appSettings = appSettings, httpClient = httpClient)
       dataEncryptor          <-
         DataEncryptor.create(appSettings.settings.encryption.enabled, appSettings.settings.encryption.platform)
-      datagramWrappingEngine <- DatagramWrappingEngine.create(dataEncryptor = dataEncryptor)
+      datagramWrappingEngine <- DatagramWrappingEngine.create(dataEncryptor = dataEncryptor, publisherId = publisherId)
       multicastSink          <-
         MulticastSink.create(multicastSettings = appSettings.settings.multicast)
       reorderFlow            <- ReprioritizeFlow.create(flow = stockTickSource.stream, tickDelay = tickDelay)

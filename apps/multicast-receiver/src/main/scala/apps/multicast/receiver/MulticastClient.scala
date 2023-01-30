@@ -46,9 +46,11 @@ case object MulticastClient {
                 sendTime        <- F.delay(FiniteDuration(datagramWrapper.timestamp, TimeUnit.MILLISECONDS))
                 currentTime     <- Clock[F].realTime
                 latency         <- F.delay(currentTime - sendTime)
+                fullId          <- F.delay(datagramWrapper.publisher)
+                publisherId     <- F.delay(fullId.takeRight(4).toUpperCase)
                 json            <- dataEncryptor.decrypt(datagramWrapper.payload)
                 stockTick       <- messageTransformer.transform(json = json)
-                output          <- messageFormatter.format(stockTick = stockTick, latency = latency)
+                output          <- messageFormatter.format(stockTick = stockTick, latency = latency, publisherId = publisherId)
                 _               <- F.delay(println("------"))
                 _               <- F.delay(println(output))
               } yield ()

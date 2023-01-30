@@ -30,45 +30,45 @@ install_jdk() {
   ln -sf "${jdk_home}" "${jdk_install_directory}"/jdk-latest
 }
 
-install_project() {
-  local project_name=${1}
-  local project_version=${2}
+install_app() {
+  local app_name=${1}
+  local app_version=${2}
   local install_root_directory=${3}
 
   local jdk_install_directory=${install_root_directory}/jdks
 
-  local project_home=${install_root_directory}/projects
-  local project_install_directory=${project_home}/install
-  local project_config_directory=${project_home}/conf
+  local apps_home=${install_root_directory}/apps
+  local apps_install_directory=${apps_home}/install
+  local apps_config_directory=${apps_home}/conf
 
   # Install Project
-  mkdir -p "${project_install_directory}"
+  mkdir -p "${apps_install_directory}"
 
-  rm -vf "${DOWNLOAD_DIRECTORY}/${project_name}.zip"
-  wget -O "${DOWNLOAD_DIRECTORY}/${project_name}.zip" "${PROJECT_DOWNLOAD_URL}/${project_name}/${project_version}/${project_name}-${project_version}.zip"
+  rm -vf "${DOWNLOAD_DIRECTORY}/${app_name}.zip"
+  wget -O "${DOWNLOAD_DIRECTORY}/${app_name}.zip" "${PROJECT_DOWNLOAD_URL}/${app_name}/${app_version}/${app_name}-${app_version}.zip"
 
-  unzip -q -o -d "${project_install_directory}" "${DOWNLOAD_DIRECTORY}/${project_name}.zip"
+  unzip -q -o -d "${apps_install_directory}" "${DOWNLOAD_DIRECTORY}/${app_name}.zip"
 
   # Setup Config
-  mkdir -p "${project_config_directory}"
-  if [ -f "${project_config_directory}/${project_name}.conf" ]; then
-     echo "Config file ${project_config_directory}/${project_name}.conf exists."
+  mkdir -p "${apps_config_directory}"
+  if [ -f "${apps_config_directory}/${app_name}.conf" ]; then
+     echo "Config file ${apps_config_directory}/${app_name}.conf exists."
   else
-    echo "Config file ${project_config_directory}/${project_name}.conf does not exists."
-    echo "Using the template at ${project_install_directory}/${project_name}/conf/override.sample.conf"
-    cp -v "${project_install_directory}/${project_name}/conf/override.sample.conf" "${project_config_directory}/${project_name}.conf"
+    echo "Config file ${apps_config_directory}/${app_name}.conf does not exists."
+    echo "Using the template at ${apps_install_directory}/${app_name}/conf/override.sample.conf"
+    cp -v "${apps_install_directory}/${app_name}/conf/override.sample.conf" "${apps_config_directory}/${app_name}.conf"
   fi
 
-  ln -sf "${project_config_directory}/${project_name}.conf" "${project_install_directory}/${project_name}/conf/override.conf"
+  ln -sf "${apps_config_directory}/${app_name}.conf" "${apps_install_directory}/${app_name}/conf/override.conf"
 
   # Create run scripts
-  touch "${project_home}/${project_name}"
-  chmod a+x "${project_home}/${project_name}"
+  touch "${apps_home}/${app_name}"
+  chmod a+x "${apps_home}/${app_name}"
 
-cat > "${project_home}/${project_name}" <<EOF
+cat > "${apps_home}/${app_name}" <<EOF
 #!/usr/bin/env bash
 
-pushd ${project_home}/install/${project_name}/bin
+pushd ${apps_home}/install/${app_name}/bin
 echo "I am in \$(pwd)"
 
 ( export JAVA_HOME=${jdk_install_directory}/jdk-latest; \\
@@ -81,7 +81,7 @@ echo "I am in \$(pwd)"
   export AWS_SECRET_ACCESS_KEY=\${AWS_SECRET_ACCESS_KEY}; \\
   export AWS_ACCESS_KEY_ID=\${AWS_ACCESS_KEY_ID}; \\
   export KMS_ENCRYPTION_KEY=\${KMS_ENCRYPTION_KEY}; \\
- ${project_home}/install/${project_name}/bin/${project_name} \\
+ ${apps_home}/install/${app_name}/bin/${app_name} \\
 )
 
 EOF
@@ -93,9 +93,9 @@ main() {
 
   install_jdk "${install_root_directory}"
 
-  install_project "multicast-publisher" "${version}" "${install_root_directory}"
-  install_project "multicast-receiver" "${version}" "${install_root_directory}"
-  install_project "multicast-snooper" "${version}" "${install_root_directory}"
+  install_app "multicast-publisher" "${version}" "${install_root_directory}"
+  install_app "multicast-receiver" "${version}" "${install_root_directory}"
+  install_app "multicast-snooper" "${version}" "${install_root_directory}"
 }
 
 main "$@"
