@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
 # Make sure these 2 values are set correctly or override them as parameters
-readonly PROJECT_VERSION="0.0.2"
+readonly PROJECT_VERSION="0.0.9"
 readonly PROJECT_ROOT=${HOME}/mcast
 
 readonly DOWNLOAD_DIRECTORY=/tmp
 readonly JDK_VERSION=17
-readonly JDK_DOWNLOAD_URL=https://download.oracle.com/java/${JDK_VERSION}/latest/jdk-${JDK_VERSION}_linux-x64_bin.tar.gz
+readonly JDK_DOWNLOAD_URL_BASE="https://download.oracle.com/java/${JDK_VERSION}/latest"
+readonly JDK_DOWNLOAD_FILE_X86_64=jdk-${JDK_VERSION}_linux-x64_bin.tar.gz
+readonly JDK_DOWNLOAD_FILE_AARCH64=jdk-${JDK_VERSION}_linux-aarch64_bin.tar.gz
 readonly JDK_DOWNLOAD_FILE=${DOWNLOAD_DIRECTORY}/jdk-${JDK_VERSION}.tar.gz
 
 readonly PROJECT_DOWNLOAD_URL="https://art.aivax.link/artifactory/libs-release-local/link/aivax/learning/scala"
@@ -16,12 +18,20 @@ install_jdk() {
   local jdk_install_directory=${install_root_directory}/jdks
   local jdk_home=${jdk_install_directory}/jdk-${JDK_VERSION}
 
+  if [[ $(uname -m) == *aarch64* ]]; then
+    local download_file=${JDK_DOWNLOAD_FILE_AARCH64}
+  else
+    local download_file=${JDK_DOWNLOAD_FILE_X86_64}
+  fi
+
+  local jdk_download_url="${JDK_DOWNLOAD_URL_BASE}/${download_file}"
+
   if [ -f $JDK_DOWNLOAD_FILE ]; then
      echo "File ${JDK_DOWNLOAD_FILE} exists."
   else
     echo "File ${JDK_DOWNLOAD_FILE} does not exist."
-    echo "Downloading it from ${JDK_DOWNLOAD_URL}"
-    wget -O ${JDK_DOWNLOAD_FILE} -q ${JDK_DOWNLOAD_URL}
+    echo "Downloading it from ${jdk_download_url}"
+    wget -O ${JDK_DOWNLOAD_FILE} -q ${jdk_download_url}
   fi
 
   mkdir -p "${jdk_home}"
