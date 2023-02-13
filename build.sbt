@@ -3,7 +3,7 @@ import Dependencies._
 import com.typesafe.sbt.packager.SettingsHelper
 
 lazy val scala213               = "2.13.10"
-lazy val scala320               = "3.2.1"
+lazy val scala320               = "3.2.2"
 lazy val supportedScalaVersions = List(scala320, scala213)
 
 inThisBuild(
