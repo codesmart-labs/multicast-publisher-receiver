@@ -1,6 +1,6 @@
 pipeline:
   echo:
-    image: sbtscala/scala-sbt:eclipse-temurin-jammy-17.0.5_8_1.8.2_2.13.10
+    image: sbtscala/scala-sbt:eclipse-temurin-jammy-17.0.5_8_1.9.3_2.13.11
     commands:
       - echo "Using java version:"
       - java -version
@@ -10,7 +10,7 @@ pipeline:
       event: [push, pull_request, tag, deployment]
 
   check:
-    image: sbtscala/scala-sbt:eclipse-temurin-jammy-17.0.5_8_1.8.2_2.13.10
+    image: sbtscala/scala-sbt:eclipse-temurin-jammy-17.0.5_8_1.9.3_2.13.11
     commands:
       - echo "Checking code formatting"
       - mkdir -p .secure_files
@@ -21,7 +21,7 @@ pipeline:
       event: [push, pull_request, tag, deployment]
 
   test:
-    image: sbtscala/scala-sbt:eclipse-temurin-jammy-17.0.5_8_1.8.2_2.13.10
+    image: sbtscala/scala-sbt:eclipse-temurin-jammy-17.0.5_8_1.9.3_2.13.11
     commands:
       - echo "Running unit tests"
       - mkdir -p .secure_files

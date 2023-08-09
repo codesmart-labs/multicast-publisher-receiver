@@ -11,7 +11,7 @@ variables:
   - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
 
 default:
-  image: sbtscala/scala-sbt:eclipse-temurin-jammy-17.0.5_8_1.8.2_2.13.10
+  image: sbtscala/scala-sbt:eclipse-temurin-jammy-17.0.5_8_1.9.3_2.13.11
 
 info:
   stage: static
@@ -110,9 +110,9 @@ release:
     - git remote add origin git@$GITLAB_SSH_HOST:$CI_PROJECT_PATH.git
     - git fetch origin
     # have the gitlab runner checkout be linked to the branch we are building
-    - git checkout -B "$CI_BUILD_REF_NAME"
-    - echo "git branch --set-upstream-to=origin/$CI_BUILD_REF_NAME $CI_BUILD_REF_NAME"
-    - git branch --set-upstream-to=origin/$CI_BUILD_REF_NAME $CI_BUILD_REF_NAME
+    - git checkout -B "$CI_COMMIT_REF_NAME"
+    - echo "git branch --set-upstream-to=origin/$CI_COMMIT_REF_NAME $CI_COMMIT_REF_NAME"
+    - git branch --set-upstream-to=origin/$CI_COMMIT_REF_NAME $CI_COMMIT_REF_NAME
     - sbt "release with-defaults default-tag-exists-answer o skip-tests"
   resource_group: release
   tags:

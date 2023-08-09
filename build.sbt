@@ -2,9 +2,9 @@ import Dependencies._
 
 import com.typesafe.sbt.packager.SettingsHelper
 
-lazy val scala213               = "2.13.10"
-lazy val scala320               = "3.2.2"
-lazy val supportedScalaVersions = List(scala320, scala213)
+lazy val scala213               = "2.13.11"
+lazy val scala330               = "3.3.0"
+lazy val supportedScalaVersions = List(scala330, scala213)
 
 inThisBuild(
   List(
@@ -39,7 +39,8 @@ val compilerOptionsCommon = Seq(
   "-feature",
   "-Xfatal-warnings",
   "-language:higherKinds",
-  "-language:postfixOps"
+  "-language:postfixOps",
+  "-Wconf:msg=lambda-parens:s"
 )
 
 val compilerOptionsScala212 = Seq("-Xlint", "-Ypartial-unification")
