@@ -3,12 +3,12 @@ package multicast
 package publisher
 package stream
 
-import cats.effect.{ Async, Resource }
+import cats.effect.{ Resource, Sync }
 import cats.implicits.*
 import com.comcast.ip4s.*
 import common.multicast.socket.MulticastSocket
 import fs2.*
-import fs2.io.net.Datagram
+import fs2.io.net.{ Datagram, Network }
 import model.multicast.DatagramWrapper.toJson
 import model.multicast.{ DatagramWrapper, MulticastSettings }
 import org.typelevel.log4cats.Logger
@@ -22,8 +22,8 @@ sealed trait MulticastSink[F[_]] {
 }
 case object MulticastSink {
 
-  def create[F[_]](multicastSettings: MulticastSettings)(implicit
-    F: Async[F],
+  def create[F[_]: Network](multicastSettings: MulticastSettings)(implicit
+    F: Sync[F],
     logger: Logger[F]
   ): Resource[F, MulticastSink[F]] =
     for {

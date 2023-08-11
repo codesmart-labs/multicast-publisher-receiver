@@ -2,7 +2,7 @@ package common
 package multicast
 package socket
 
-import cats.effect.{ Async, Resource }
+import cats.effect.{ Resource, Sync }
 import cats.implicits.*
 import com.comcast.ip4s.MulticastJoin
 import fs2.io.net.{ DatagramSocket, DatagramSocketOption, Network }
@@ -17,7 +17,9 @@ sealed trait MulticastSocket[F[_]] {
 
 case object MulticastSocket {
 
-  def create[F[_]](multicastSettings: MulticastSettings)(implicit F: Async[F]): Resource[F, MulticastSocket[F]] =
+  def create[F[_]: Network](
+    multicastSettings: MulticastSettings
+  )(implicit F: Sync[F]): Resource[F, MulticastSocket[F]] =
     for {
       v4ProtocolFamily <- Resource.pure(StandardProtocolFamily.INET)
       v4Interfaces     <- Resource.pure {

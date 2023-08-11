@@ -11,7 +11,7 @@ object PublisherApp extends IOApp.Simple {
 
   def run: IO[Unit] = {
 
-    implicit val logging: LoggerFactory[IO]            = Slf4jFactory[IO]
+    implicit val logging: LoggerFactory[IO]            = Slf4jFactory.create[IO]
     implicit val logger: SelfAwareStructuredLogger[IO] = LoggerFactory[IO].getLogger
 
     Stream
