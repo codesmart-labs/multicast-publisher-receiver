@@ -10,6 +10,7 @@ import cats.effect.std.UUIDGen
 import cats.effect.{ Async, Resource }
 import cats.implicits.*
 import fs2.*
+import fs2.io.net.Network
 import org.http4s.ember.client.EmberClientBuilder
 import org.typelevel.log4cats.Logger
 
@@ -18,7 +19,7 @@ sealed trait Orchestrator[F[_]] {
   def run: Stream[F, Unit]
 }
 case object Orchestrator {
-  def create[F[_]](implicit F: Async[F], logger: Logger[F]): Resource[F, Orchestrator[F]] =
+  def create[F[_]: Network](implicit F: Async[F], logger: Logger[F]): Resource[F, Orchestrator[F]] =
     for {
       appSettings            <- AppSettings.load
       tickDelay              <- Resource.pure(appSettings.settings.stream.tickDelay)
