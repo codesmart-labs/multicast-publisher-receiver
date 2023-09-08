@@ -3,7 +3,7 @@ import sbt._
 object Dependencies {
   // Versions
   lazy val catsEffectVersion            = "3.5.1"
-  lazy val fs2Version                   = "3.8.0"
+  lazy val fs2Version                   = "3.9.0"
   lazy val log4catsVersion              = "2.6.0"
   lazy val http4sVersion                = "0.23.22"
   lazy val circeVersion                 = "0.14.5"
@@ -16,7 +16,7 @@ object Dependencies {
   lazy val munitVersion                 = "0.7.29"
   lazy val munitCatsEffectVersion       = "1.0.7"
   lazy val log4jVersion                 = "2.20.0"
-  lazy val `aws-sdk-core-version`       = "1.12.429"
+  lazy val `aws-sdk-core-version`       = "1.12.472"
   lazy val `aws-encryption-sdk-version` = "2.4.0"
   lazy val `bouncycastle-version`       = "1.70"
   lazy val `jaxb-api-version`           = "2.3.1"
