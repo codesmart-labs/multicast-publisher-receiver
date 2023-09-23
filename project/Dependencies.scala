@@ -3,10 +3,10 @@ import sbt._
 object Dependencies {
   // Versions
   lazy val catsEffectVersion            = "3.5.1"
-  lazy val fs2Version                   = "3.9.0"
+  lazy val fs2Version                   = "3.9.2"
   lazy val log4catsVersion              = "2.6.0"
-  lazy val http4sVersion                = "0.23.22"
-  lazy val circeVersion                 = "0.14.5"
+  lazy val http4sVersion                = "0.23.23"
+  lazy val circeVersion                 = "0.14.6"
   lazy val pureconfigVersion            = "0.17.2"
   lazy val fs2DataCsvVersion            = "1.8.0"
   lazy val `ip4s-version`               = "3.3.0"
