@@ -1,9 +1,9 @@
-import Dependencies._
+import Dependencies.*
 
 import com.typesafe.sbt.packager.SettingsHelper
 
-lazy val scala213               = "2.13.11"
-lazy val scala330               = "3.3.0"
+lazy val scala213               = "2.13.12"
+lazy val scala330               = "3.3.1"
 lazy val supportedScalaVersions = List(scala330, scala213)
 
 inThisBuild(
@@ -206,7 +206,6 @@ lazy val `encryption-core` = (project in file("encryption/encryption-core"))
 lazy val `encryption-aws` = (project in file("encryption/encryption-aws"))
   .dependsOn(`model-authentication`, `encryption-core`)
   .settings(
-    Defaults.itSettings,
     scalacOptions ++= compilerOptionsCommon ++ PartialFunction
       .condOpt(CrossVersion.partialVersion(scalaVersion.value)) {
         case Some((2, n)) if n < 13  => compilerOptionsScala212
@@ -215,7 +214,7 @@ lazy val `encryption-aws` = (project in file("encryption/encryption-aws"))
       }
       .toList
       .flatten,
-    publish / skip        := true,
+    publish / skip := true,
     libraryDependencies ++= munitDeps
       ++ loggingDeps
       :+ fs2Core
@@ -225,11 +224,7 @@ lazy val `encryption-aws` = (project in file("encryption/encryption-aws"))
       :+ `aws-encryption-sdk`
       :+ `bouncycastle`
       :+ `jaxb-api`
-      :+ munitCore         % "it"
-      :+ catsEffectTestkit % "it"
-      :+ munitCatsEffect   % "it"
   )
-  .configs(IntegrationTest)
 
 lazy val `multicast-core` = (project in file("apps/multicast-core"))
   .dependsOn(`model-multicast`, `model-authentication`, `encryption-aws`)
